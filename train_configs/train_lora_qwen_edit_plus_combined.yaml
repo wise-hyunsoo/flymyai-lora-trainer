@@ -1,0 +1,58 @@
+pretrained_model_name_or_path: Qwen/Qwen-Image-Edit-2509
+data_config:
+  train_batch_size: 1
+  num_workers: 0
+  img_size: 1024
+  caption_dropout_rate: 0.1
+  # shadow + screen 두 도메인을 50:50으로 균등 샘플링.
+  # screen 도메인 내부에서는 dungeon vs JumGweGong이 WeightedRandomSampler로
+  # 균등 유지되므로 최종 분포는 shadow 50% / dungeon 25% / JumGweGong 25%.
+  domains:
+    - type: shadow
+      img_dir: /root/data/shadowmagic_experiment/flymyai-lora-trainer/images
+      control_dir: /root/data/shadowmagic_experiment/flymyai-lora-trainer/control_images
+    - type: screen
+      img_dir: /root/data/shadowmagic_experiment/flymyai-lora-trainer/screen_images
+      control_dir: /root/data/shadowmagic_experiment/flymyai-lora-trainer/screen_control_images
+  random_ratio: true
+  caption_type: txt
+report_to: "wandb"
+validation_steps: 250
+validation_prompts:
+  - "BACK shadow"
+  - "LEFT shadow"
+  - "ZIGZAG highlight brush"
+  - "CURVED highlight brush"
+validation_control_images:
+  - "/root/data/base_data/56ep_page0010_2_lineart.png"
+  - "/root/data/base_data/56ep_page0010_2_lineart.png"
+  - "/root/data/base_data/56ep_page0010_2_lineart.png"
+  - "/root/data/base_data/nammaljung_4.png"
+train_batch_size: 1
+output_dir: /root/data/shadowmagic_experiment/flymyai-lora-trainer/test_lora_saves_edit_plus_combined
+max_train_steps: 5000
+learning_rate: 2e-4
+lr_scheduler: cosine_with_restarts
+lr_warmup_steps: 100
+lr_num_cycles: 1
+adam_beta1: 0.9
+adam_beta2: 0.999
+adam_weight_decay: 0.01
+adam_epsilon: 1e-8
+max_grad_norm: 1.0
+logging_dir: logs
+mixed_precision: "bf16"
+checkpointing_steps: 250
+checkpoints_total_limit: 10
+tracker_project_name: combined_shadow_screen_lora
+resume_from_checkpoint: latest
+gradient_accumulation_steps: 4
+rank: 16
+precompute_text_embeddings: false
+precompute_image_embeddings: false
+quantize: false
+adam8bit: false
+save_cache_on_disk: false
+image_logging_steps: 50
+max_training_log_rows: 128
+max_validation_log_rows: 128

@@ -1,0 +1,50 @@
+pretrained_model_name_or_path: Qwen/Qwen-Image-Edit-2509
+data_config:
+  train_batch_size: 1
+  num_workers: 8  # 0으로 변경: 멀티프로세싱 캐시 문제 방지
+  img_size: 1024
+  caption_dropout_rate: 0.1  # 원래대로 복구
+  img_dir: /root/data/shadowmagic_experiment/flymyai-lora-trainer/screen_images  # screen_images로 복구 (진짜 수정 완료!)
+  control_dir: /root/data/shadowmagic_experiment/flymyai-lora-trainer/screen_control_images  # screen_control_images로 복구 (진짜 수정 완료!)
+  random_ratio: true # support multi crop preprocessing
+  caption_type: txt
+report_to: "wandb"
+validation_steps: 250
+validation_prompts:
+  - "ZIGZAG highlight brush"
+  - "CURVED highlight brush"
+  - "ZIGZAG highlight brush"
+  - "CURVED highlight brush"
+validation_control_images:
+  - "/root/data/base_data/56ep_page0010_2_lineart.png"
+  - "/root/data/base_data/56ep_page0010_2_lineart.png"
+  - "/root/data/base_data/nammaljung_4.png"
+  - "/root/data/base_data/nammaljung_4.png"
+train_batch_size: 1
+output_dir: /root/data/shadowmagic_experiment/flymyai-lora-trainer/test_lora_saves_edit_plus_highlight_brush_newprompt_morestep
+max_train_steps: 5000
+learning_rate: 2e-4
+lr_scheduler: cosine_with_restarts
+lr_warmup_steps: 100
+lr_num_cycles: 1
+adam_beta1: 0.9
+adam_beta2: 0.999
+adam_weight_decay: 0.01
+adam_epsilon: 1e-8
+max_grad_norm: 1.0
+logging_dir: logs
+mixed_precision: "bf16"
+checkpointing_steps: 250
+checkpoints_total_limit: 10
+tracker_project_name: highlight_brush_lora_test_plus
+resume_from_checkpoint: latest
+gradient_accumulation_steps: 4
+rank: 16
+precompute_text_embeddings: false
+precompute_image_embeddings: false
+quantize: false
+adam8bit: false
+save_cache_on_disk: false
+image_logging_steps: 50      # or raise it if you still see pauses
+max_training_log_rows: 128
+max_validation_log_rows: 128
